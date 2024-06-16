@@ -1,8 +1,10 @@
 package tests;
 
 import baseEntities.BaseTest;
-import dev.failsafe.internal.util.Assert;
 import org.junit.jupiter.api.Test;
+import pages.FramesPage;
+import pages.JavaScriptAlertsPage;
+import pages.WindowPage;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -10,40 +12,45 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class HerokuappTest extends BaseTest {
 
-    String text = "Hello World";
 
     @Test
     public void iFrameTest() {
-        // Тест сделан "в слепую" - т.к. пользоваться редактором не могу.
-        // (TinyMCE is in read-only mode because you have no more editor loads available this month.
-        // Please request that the admin upgrade your plan
-        //or add a valid payment method for additional editor load charges.)
-
-        frame.openIFramePage();
-        iFrame.inputBoldText(text);
+        new FramesPage()
+                .clickOnIframe()
+                .clickOnBoldButton()
+                .inputText("Hello World!");
     }
 
     @Test
     public void windowsTest() {
-        assertEquals(window.openNewWindows(), "New Window");
-        assertTrue(window.closeNewTabAndSwitchToOldTab().isDisplayed());
+        new WindowPage()
+                .openNewWindow()
+                .newPageVerification("New Window")
+                .closeNewWindow()
+                .windowPageVerification();
     }
 
     @Test
-    public void infoAlertTest() {
-        assertEquals(javaScriptAlerts.clickForJSAlert(), "I am a JS Alert");
-        assertTrue(driver.getPageSource().contains("You successfully clicked an alert"));
+    public void infoJSAlertTest() {
+        new JavaScriptAlertsPage()
+                .clickOnForJSAlert()
+                .jsAlertConfirmAndVerification()
+                .closeAlertVerification("You successfully clicked an alert");
     }
 
     @Test
-    public void confirmationInfoAlertTest() {
-        javaScriptAlerts.clickForConfirmationInfoAlert();
-        assertTrue(driver.getPageSource().contains("You clicked: Cancel"));
+    public void jsConfirmTest() {
+        new JavaScriptAlertsPage()
+                .clickOnJSConfirm()
+                .dismissAndVerification()
+                .closeAlertVerification("You clicked: Cancel");
     }
 
     @Test
-    public void confirmationDeclineInfoAlertTest() {
-        javaScriptAlerts.clickForPromtInfoAlert(text);
-        assertTrue(driver.getPageSource().contains(text));
+    public void jsPromptTest() {
+        new JavaScriptAlertsPage()
+                .clickOnJSPrompt()
+                .inputText("Hello World")
+                .closeAlertVerification("You entered: Hello World");
     }
 }
